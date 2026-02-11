@@ -13,13 +13,10 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "baseUrl": ".",
+    "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]
     }
   },
   "include": [
@@ -29,6 +26,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "src/app/layout.jsx", "src/app/page.jsx", "src/components/Navbar.jsx", "src/components/FoodCard.jsx", "src/components/ui/button.jsx", "src/components/ui/card.jsx"  ],
   "exclude": ["node_modules"]
 }
