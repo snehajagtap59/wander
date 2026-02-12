@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import FavouriteButton from "@/components/FavouriteButton";
-import { supabase } from "@/app/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 
 export default function FavouritesPage() {
   const router = useRouter();

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { supabase } from "@/app/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 
 export default function HomePage() {
   const [user, setUser] = useState(null);

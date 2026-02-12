@@ -1,5 +1,5 @@
 import SpaceCard from "@/components/SpaceCard";
-import { createClient } from "@/app/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function SpacePage() {
   const supabase = await createClient();

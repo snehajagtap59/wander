@@ -1,5 +1,5 @@
 import FantasyCard from "@/components/FantasyCard";
-import { createClient } from "@/app/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function FantasyPage() {
   const supabase = await createClient();
