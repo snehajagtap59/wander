@@ -1,5 +1,5 @@
 import PlaceCard from "@/components/PlaceCard";
-import { createClient } from "@/app/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function ExplorePage() {
   const supabase = await createClient();

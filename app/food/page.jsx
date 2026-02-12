@@ -1,5 +1,5 @@
 import FoodCard from "@/components/FoodCard";
-import { createClient } from "@/app/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function FoodPage() {
   const supabase = await createClient();
