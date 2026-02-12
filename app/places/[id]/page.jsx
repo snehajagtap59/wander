@@ -4,6 +4,60 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
+const fallbackPlaces = [
+  {
+    id: "1",
+    name: "Mumbai",
+    country: "India",
+    cover_image:
+      "https://lp-cms-production.imgix.net/2019-06/ab5c55eb6f981026230a95dfb052a51d-taj-mahal-palace-mumbai.jpg?auto=format&q=40&ar=16:9&fit=crop&crop=center&fm=auto&w=5500",
+    description:
+      "Mumbai is India’s financial capital, famous for Bollywood, street food, and its vibrant coastal life.",
+  },
+  {
+    id: "2",
+    name: "Goa",
+    country: "India",
+    cover_image: "https://wallpaperaccess.com/full/3068233.jpg",
+    description:
+      "Goa is known for its beaches, nightlife, Portuguese heritage, and relaxed tropical vibe.",
+  },
+  {
+    id: "3",
+    name: "Paris",
+    country: "France",
+    cover_image:
+      "https://tse4.mm.bing.net/th/id/OIP.JIM-FgEHOnaiuBZ29MYs-AHaF9?rs=1&pid=ImgDetMain&o=7&rm=3",
+    description:
+      "Paris, the City of Light, is famous for art, fashion, cafés, and landmarks like the Eiffel Tower.",
+  },
+  {
+    id: "4",
+    name: "Tokyo",
+    country: "Japan",
+    cover_image: "https://wallpapercave.com/wp/wp8438159.jpg",
+    description:
+      "Tokyo blends ultra-modern life with ancient temples, world-class food, and unique pop culture.",
+  },
+  {
+    id: "5",
+    name: "New York",
+    country: "USA",
+    cover_image:
+      "https://lp-cms-production.imgix.net/2020-11/shutterstockRF_259501811.jpg?auto=format&fit=crop&sharp=10&vib=20&ixlib=react-8.6.4&w=850&q=35&dpr=3",
+    description:
+      "New York City is the city that never sleeps, known for skyscrapers, culture, and diversity.",
+  },
+  {
+    id: "6",
+    name: "Switzerland",
+    country: "Europe",
+    cover_image: "https://wallpaperaccess.com/full/1094103.jpg",
+    description:
+      "Switzerland is famous for the Alps, scenic landscapes, chocolate, and peaceful alpine towns.",
+  },
+];
+
 export default function PlaceDetailPage() {
   const { id } = useParams();
 
