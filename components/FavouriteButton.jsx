@@ -6,51 +6,54 @@ export default function FavouriteButton({ item }) {
   const [isFav, setIsFav] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastText, setToastText] = useState("");
-
   const timeoutRef = useRef(null);
 
+  // ✅ SAFE normalization (STRING id)
   const favItem = {
-    id: Number(item.id),
+    id: String(item.id), // 🔥 THIS IS THE FIX
     name: item.name,
     image: item.cover_image || item.image,
     type: "places",
   };
 
-  const syncFavState = () => {
-    const stored = JSON.parse(localStorage.getItem("favourites")) || [];
-    setIsFav(stored.some((i) => i.id === favItem.id));
+  const getStored = () =>
+    JSON.parse(localStorage.getItem("favourites")) || [];
+
+  const syncState = () => {
+    const stored = getStored();
+    setIsFav(stored.some(i => i.id === favItem.id && i.type === favItem.type));
   };
 
   useEffect(() => {
-    syncFavState();
-    window.addEventListener("storage", syncFavState);
-
-    return () => {
-      window.removeEventListener("storage", syncFavState);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
+    syncState();
   }, []);
 
   const toggleFavourite = () => {
-    const stored = JSON.parse(localStorage.getItem("favourites")) || [];
-    const exists = stored.some((i) => i.id === favItem.id);
+    const stored = getStored();
 
-    const updated = exists
-      ? stored.filter((i) => i.id !== favItem.id)
-      : [...stored, favItem];
+    const exists = stored.some(
+      i => i.id === favItem.id && i.type === favItem.type
+    );
+
+    let updated;
+
+    if (exists) {
+      updated = stored.filter(
+        i => !(i.id === favItem.id && i.type === favItem.type)
+      );
+      setToastText("Removed from favourites 💔");
+    } else {
+      updated = [...stored, favItem];
+      setToastText("Added to favourites ❤️");
+    }
 
     localStorage.setItem("favourites", JSON.stringify(updated));
 
     setIsFav(!exists);
-    setToastText(exists ? "Removed from favourites 💔" : "Added to favourites ❤️");
     setShowToast(true);
 
-    // ✅ SAFE timeout handling
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-    timeoutRef.current = setTimeout(() => {
-      setShowToast(false);
-    }, 2000);
+    timeoutRef.current = setTimeout(() => setShowToast(false), 2000);
   };
 
   return (
