@@ -1,43 +1,52 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  getFavourites,
-  addFavourite,
-  removeFavourite,
-} from "@/lib/favourites";
 
 export default function FavouriteButton({ item }) {
   const [isFav, setIsFav] = useState(false);
   const [toast, setToast] = useState("");
   const timeoutRef = useRef(null);
 
+  // 🔥 UNIQUE identity = type + id
   const favItem = {
     id: String(item.id),
+    type: item.type, // MUST exist (foods / places / etc.)
     name: item.name,
-    image: item.cover_image || item.image,
-    type: "places",
+    image: item.image || item.cover_image,
   };
 
-  const sync = () => {
-    const stored = getFavourites();
-    setIsFav(stored.some(i => i.id === favItem.id));
+  const getStored = () =>
+    JSON.parse(localStorage.getItem("favourites")) || [];
+
+  const existsInStorage = () => {
+    const stored = getStored();
+    return stored.some(
+      (i) => i.id === favItem.id && i.type === favItem.type
+    );
   };
 
   useEffect(() => {
-    sync();
+    setIsFav(existsInStorage());
   }, []);
 
-  const toggle = () => {
-    if (isFav) {
-      removeFavourite(favItem);
+  const toggleFavourite = () => {
+    const stored = getStored();
+    const exists = existsInStorage();
+
+    let updated;
+
+    if (exists) {
+      updated = stored.filter(
+        (i) => !(i.id === favItem.id && i.type === favItem.type)
+      );
       setToast("Removed from favourites 💔");
     } else {
-      addFavourite(favItem);
+      updated = [...stored, favItem];
       setToast("Added to favourites ❤️");
     }
 
-    sync();
+    localStorage.setItem("favourites", JSON.stringify(updated));
+    setIsFav(!exists);
 
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => setToast(""), 2000);
@@ -46,7 +55,7 @@ export default function FavouriteButton({ item }) {
   return (
     <>
       <button
-        onClick={toggle}
+        onClick={toggleFavourite}
         className="text-xl transition hover:scale-110"
       >
         {isFav ? "❤️" : "🤍"}
