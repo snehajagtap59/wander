@@ -1,41 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function FavouriteButton({ item }) {
   const [isFav, setIsFav] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastText, setToastText] = useState("");
 
-  // ✅ Normalize item BEFORE saving
-  const normalizedItem = {
+  const timeoutRef = useRef(null);
+
+  const favItem = {
     id: Number(item.id),
     name: item.name,
-    image: item.cover_image || item.image, // handles places
-    type: "places", // 👈 VERY IMPORTANT (matches folder name)
+    image: item.cover_image || item.image,
+    type: "places",
+  };
+
+  const syncFavState = () => {
+    const stored = JSON.parse(localStorage.getItem("favourites")) || [];
+    setIsFav(stored.some((i) => i.id === favItem.id));
   };
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("favourites")) || [];
-    setIsFav(stored.some((i) => i.id === normalizedItem.id));
-  }, [item]);
+    syncFavState();
+    window.addEventListener("storage", syncFavState);
+
+    return () => {
+      window.removeEventListener("storage", syncFavState);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const toggleFavourite = () => {
-    let stored = JSON.parse(localStorage.getItem("favourites")) || [];
+    const stored = JSON.parse(localStorage.getItem("favourites")) || [];
+    const exists = stored.some((i) => i.id === favItem.id);
 
-    if (isFav) {
-      stored = stored.filter((i) => i.id !== normalizedItem.id);
-      setToastText("Removed from favourites 💔");
-    } else {
-      stored.push(normalizedItem);
-      setToastText("Added to favourites ❤️");
-    }
+    const updated = exists
+      ? stored.filter((i) => i.id !== favItem.id)
+      : [...stored, favItem];
 
-    localStorage.setItem("favourites", JSON.stringify(stored));
-    setIsFav(!isFav);
+    localStorage.setItem("favourites", JSON.stringify(updated));
+
+    setIsFav(!exists);
+    setToastText(exists ? "Removed from favourites 💔" : "Added to favourites ❤️");
     setShowToast(true);
 
-    setTimeout(() => setShowToast(false), 2000);
+    // ✅ SAFE timeout handling
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    timeoutRef.current = setTimeout(() => {
+      setShowToast(false);
+    }, 2000);
   };
 
   return (
