@@ -19,21 +19,17 @@ export default function FavouritesPage() {
   };
 
   useEffect(() => {
-    const init = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+   const load = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return router.push("/login");
 
-      if (!user) {
-        router.push("/login");
-        return;
-      }
+    setItems(JSON.parse(localStorage.getItem("favourites")) || []);
+    setLoading(false);
+  };
 
-      loadFavourites();
-      setLoading(false);
-    };
+  load();
 
-    init();
+
 
     // 🔥 Listen for changes from FavouriteButton
     window.addEventListener("storage", loadFavourites);
