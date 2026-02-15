@@ -115,7 +115,7 @@ export default function FavouritesPage() {
               </div>
 
               <Link
-                href={`/places/${item.id}`}
+                href={`/${item.type}/${item.id}`}
                 className="mt-4 inline-block text-sm font-medium hover:underline"
               >
                 Explore →
