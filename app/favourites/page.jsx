@@ -12,26 +12,38 @@ export default function FavouritesPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔁 Always read favourites from localStorage
+  // ✅ Map item types to route folders
+  const routeMap = {
+    place: "places",
+    food: "food",
+    fantasy: "fantasy",
+    space: "space",
+  };
+
+  // 🔁 Read favourites from localStorage
   const loadFavourites = () => {
     const stored = JSON.parse(localStorage.getItem("favourites")) || [];
     setItems(stored);
   };
 
   useEffect(() => {
-   const load = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return router.push("/login");
+    const init = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    setItems(JSON.parse(localStorage.getItem("favourites")) || []);
-    setLoading(false);
-  };
+      if (!user) {
+        router.push("/login");
+        return;
+      }
 
-  load();
+      loadFavourites();
+      setLoading(false);
+    };
 
+    init();
 
-
-    // 🔥 Listen for changes from FavouriteButton
+    // 🔥 Sync favourites across tabs
     window.addEventListener("storage", loadFavourites);
 
     return () => {
@@ -93,36 +105,43 @@ export default function FavouritesPage() {
       </div>
 
       <div className="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-6">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="relative rounded-2xl overflow-hidden border bg-white/50 backdrop-blur-md shadow-lg"
-          >
-            <div className="relative h-44 w-full">
-              <Image
-                src={item.image}
-                alt={item.name}
-                fill
-                className="object-cover"
-                unoptimized
-              />
-            </div>
+        {items.map((item) => {
+          const slug = routeMap[item.type];
 
-            <div className="p-4">
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="text-lg font-semibold">{item.name}</h3>
-                <FavouriteButton item={item} />
+          // 🛡️ Safety check to avoid broken routes
+          if (!slug) return null;
+
+          return (
+            <div
+              key={`${item.type}-${item.id}`}
+              className="relative rounded-2xl overflow-hidden border bg-white/50 backdrop-blur-md shadow-lg"
+            >
+              <div className="relative h-44 w-full">
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
               </div>
 
-              <Link
-                href={`/${item.type}/${item.id}`}
-                className="mt-4 inline-block text-sm font-medium hover:underline"
-              >
-                Explore →
-              </Link>
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="text-lg font-semibold">{item.name}</h3>
+                  <FavouriteButton item={item} />
+                </div>
+
+                <Link
+                  href={`/${slug}/${item.id}`}
+                  className="mt-4 inline-block text-sm font-medium hover:underline"
+                >
+                  Explore →
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
